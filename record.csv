@@ -1,0 +1,5 @@
+,Class Weight,Loss function,Model,Penalty,Sensitivity,Specificity,T0P0,T0P1,T1P0,T1P1,Unnamed: 0,Unnamed: 0.1,n_components
+0,balanced_subsample,hinge,RF,l2,0.640625,0.997775306,897.0,2.0,23.0,41.0,0.0,0.0,500
+1,balanced_subsample,hinge,SVM,l2,0.6875,0.989988877,890.0,9.0,20.0,44.0,1.0,1.0,500
+2,balanced_subsample,hinge,RF,l2,0.671875,0.9955506117908788,895.0,4.0,21.0,43.0,2.0,,200
+3,balanced_subsample,hinge,SVM,l2,0.578125,0.9922135706340378,892.0,7.0,27.0,37.0,,,200
