@@ -5,7 +5,7 @@ import random
 import os.path
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -15,6 +15,7 @@ import pickle
 import re
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import SGDClassifier
+import platform
 
 
 
@@ -40,7 +41,7 @@ class ethPredictor2():
         self.class_weight=class_weight
         self.lossfn =lossfn
         self.penalty=penalty
-        print("Tuning params: number of components for PCA: ", n_components, "; Loss function: ", lossfn)
+        print("Number of components for PCA: ", n_components, "; Loss function: ", lossfn)
 
   
 
@@ -117,9 +118,8 @@ class ethPredictor2():
                                     'Class Weight': [self.class_weight],
                                     'Penalty': [self.penalty]})
                 df2 = df2[['Model','n_components','Loss function','Class Weight','Penalty','Sensitivity','Specificity','T1P1','T1P0','T0P0','T0P1']]
-                df=df.append(df2, ignore_index=True)
-                with open('record.csv', 'w') as f:
-                    df.to_csv(f, header=True)
+                with open('record.csv', 'a') as f:
+                    df2.to_csv(f, header=False, index=False)
             else:
                 #create a new table and save it as file.
                 df = pd.DataFrame({'Model':modelName,
@@ -185,8 +185,14 @@ class ethPredictor2():
         save_classifier.close()
         print("Saved Random Forest classifier as randomForest.pickle")
 
-
-list_comp = [200, 300, 500, 800, 1000, 1500, 2000, 3000]
-for n_components in list_comp:
-    df = ethPredictor2("5percentdata.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2")
-    df.trainAndTest()
+## Runing on server 
+if platform.system() == 'Linux':
+    list_comp = [200, 300, 500, 800, 1000, 1500, 2000, 3000]
+    for n_components in list_comp:
+        df = ethPredictor2("1910p_1percent.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2")
+        df.trainAndTest()
+else:
+    list_comp = [200, 300, 500, 800, 1000, 1500, 2000, 3000]
+    for n_components in list_comp:
+        df = ethPredictor2("5percentdata.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2")
+        df.trainAndTest()

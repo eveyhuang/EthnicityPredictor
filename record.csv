@@ -1,5 +1,9 @@
-,Class Weight,Loss function,Model,Penalty,Sensitivity,Specificity,T0P0,T0P1,T1P0,T1P1,Unnamed: 0,Unnamed: 0.1,n_components
-0,balanced_subsample,hinge,RF,l2,0.640625,0.997775306,897.0,2.0,23.0,41.0,0.0,0.0,500
-1,balanced_subsample,hinge,SVM,l2,0.6875,0.989988877,890.0,9.0,20.0,44.0,1.0,1.0,500
-2,balanced_subsample,hinge,RF,l2,0.671875,0.9955506117908788,895.0,4.0,21.0,43.0,2.0,,200
-3,balanced_subsample,hinge,SVM,l2,0.578125,0.9922135706340378,892.0,7.0,27.0,37.0,,,200
+Model,n_components,Loss function,Class Weight,Penalty,Sensitivity,Specificity,T1P1,T1P0,T0P0,T0P1
+RF,200,hinge,balanced_subsample,l2,0.640625,0.9944382647385984,41.0,23.0,894.0,5.0
+SVM,200,hinge,balanced_subsample,l2,0.484375,0.9933259176863182,31.0,33.0,893.0,6.0
+RF,300,hinge,balanced_subsample,l2,0.640625,0.9955506117908788,41.0,23.0,895.0,4.0
+SVM,300,hinge,balanced_subsample,l2,0.546875,0.9911012235817576,35.0,29.0,891.0,8.0
+RF,500,hinge,balanced_subsample,l2,0.59375,0.9977753058954394,38.0,26.0,897.0,2.0
+SVM,500,hinge,balanced_subsample,l2,0.515625,0.9922135706340378,33.0,31.0,892.0,7.0
+RF,800,hinge,balanced_subsample,l2,0.5625,1.0,36.0,28.0,899.0,0.0
+SVM,800,hinge,balanced_subsample,l2,0.59375,0.9933259176863182,38.0,26.0,893.0,6.0
