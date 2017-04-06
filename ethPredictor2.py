@@ -49,7 +49,12 @@ class ethPredictor2():
     def trainAndTest(self,trainingPercent=0.80):
         featureset=[]
         for Lastname, Firstname in zip(self.df[self.lastName], self.df[self.firstName]):
-            featureset.append(str(Lastname).lower() + ' ' + str(Firstname).lower())
+            fName = str(Firstname).lower()
+            lName = str(Lastname).lower()
+            if len(fName) != 1:
+                featureset.append(lName + ' ' + fName)
+            else:
+                featureset.append(lName)
         
         Y = self.df[self.ethnicityCol].values
 
