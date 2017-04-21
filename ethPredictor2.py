@@ -8,9 +8,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Normalizer
+import scipy.sparse
 import pickle
 import re
 from sklearn.pipeline import Pipeline
@@ -29,7 +31,7 @@ class ethPredictor2():
 
     ## Read in data with specified variables.
 
-    def __init__(self, fileName, lastName, ethnicityCol,n_components, class_weight, lossfn, penalty, firstName='FName'):
+    def __init__(self, fileName, lastName, ethnicityCol,n_components, class_weight, lossfn, penalty, transformer,firstName='FName'):
         print ("Reading data from file: " + fileName)
         self.df = pd.read_csv(fileName, encoding='latin-1')
         self.lastName = lastName
@@ -41,7 +43,8 @@ class ethPredictor2():
         self.class_weight=class_weight
         self.lossfn =lossfn
         self.penalty=penalty
-        print("Number of components for PCA: ", n_components, "; Loss function: ", lossfn)
+        self.transformer = transformer
+        print("Number of components for PCA: ", n_components, "; Loss function: ", lossfn, transformer)
 
   
 
@@ -69,10 +72,14 @@ class ethPredictor2():
 
         data = np.column_stack((featureset, Y))    
 
-        vect = CountVectorizer(analyzer=words_and_char_bigrams)
+
+        if self.transformer == 'Count':
+            vect = CountVectorizer(analyzer=words_and_char_bigrams)
+        elif self.transformer == 'Tfid':
+            vect = TfidfVectorizer(analyzer=words_and_char_bigrams)
         
         X = vect.fit_transform(featureset).toarray()
-        print("* shape of the CountVectorizer: ", X.shape)
+        print("* shape of the Vectorizer: ", X.shape)
 
 
 
@@ -88,8 +95,8 @@ class ethPredictor2():
         print("Explained variance of the SVD step: {}%".format(int(explained_variance * 100)))
 
         
-        names = vect.get_feature_names()
-        print('Created Features: ', names[:7])
+        # names = vect.get_feature_names()
+        # print('Created Features: ', names[:7])
         #print('Numerical features: ', X[:7])
 
         x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.20, train_size=0.80, random_state=42)
@@ -121,8 +128,9 @@ class ethPredictor2():
                                     'n_components': [self.n_components],
                                     'Loss function': [self.lossfn],
                                     'Class Weight': [self.class_weight],
-                                    'Penalty': [self.penalty]})
-                df2 = df2[['Model','n_components','Loss function','Class Weight','Penalty','Sensitivity','Specificity','T1P1','T1P0','T0P0','T0P1']]
+                                    'Penalty': [self.penalty],
+                                    'Transformer': [self.transformer]})
+                df2 = df2[['Model','n_components','Transformer','Loss function','Class Weight','Penalty','Sensitivity','Specificity','T1P1','T1P0','T0P0','T0P1']]
                 with open('record.csv', 'a') as f:
                     df2.to_csv(f, header=False, index=False)
             else:
@@ -137,8 +145,9 @@ class ethPredictor2():
                                     'n_components': [self.n_components],
                                     'Loss function': [self.lossfn],
                                     'Class Weight': [self.class_weight],
-                                    'Penalty': [self.penalty]})
-                df = df[['Model','n_components','Loss function','Class Weight','Penalty','Sensitivity','Specificity','T1P1','T1P0','T0P0','T0P1']]
+                                    'Penalty': [self.penalty],
+                                    'Transformer': [self.transformer]})
+                df = df[['Model','n_components','Transformer','Loss function','Class Weight','Penalty','Sensitivity','Specificity','T1P1','T1P0','T0P0','T0P1']]
                 df.to_csv("record.csv", index = False)  
         
 
@@ -155,13 +164,13 @@ class ethPredictor2():
         print('Weighted Accuracy: ', weightedAccuracy)
         classifaction_report_csv("RF", sensitivity, specificity, float(cm[1][1]), float(cm[1][0]), float(cm[0][0]), float(cm[0][1]) )
 
-        topfeatures= []
-        feature_names = vect.get_feature_names()
-        top10 = np.argsort(clf_RF.feature_importances_)[-10:]
-        for i in top10:
-            topfeatures.append(feature_names[i]) 
-        print("Random Forest Most informative features: ")
-        print(topfeatures)
+        # topfeatures= []
+        # feature_names = vect.get_feature_names()
+        # top10 = np.argsort(clf_RF.feature_importances_)[-10:]
+        # for i in top10:
+        #     topfeatures.append(feature_names[i]) 
+        # print("Random Forest Most informative features: ")
+        # print(topfeatures)
 
         print('***********************************')
 
@@ -178,26 +187,31 @@ class ethPredictor2():
         classifaction_report_csv("SVM", sensitivity, specificity, float(cm2[1][1]), float(cm2[1][0]), float(cm2[0][0]), float(cm2[0][1]))
   
         ## Get most informative featrues: 
-        coefs_with_fns = sorted(zip(clf_SVM.coef_[0], feature_names))
-        top = zip(coefs_with_fns[:10], coefs_with_fns[:-11:-1])
-        print("Most informative features: ")
-        for (coef_1, fn_1), (coef_2, fn_2) in top:
-            print("\t%.4f\t%-15s\t\t%.4f\t%-15s" % (coef_1, fn_1, coef_2, fn_2))
+        # coefs_with_fns = sorted(zip(clf_SVM.coef_[0], feature_names))
+        # top = zip(coefs_with_fns[:10], coefs_with_fns[:-11:-1])
+        # print("Most informative features: ")
+        # for (coef_1, fn_1), (coef_2, fn_2) in top:
+        #     print("\t%.4f\t%-15s\t\t%.4f\t%-15s" % (coef_1, fn_1, coef_2, fn_2))
 
         # Save trained classfier
-        save_classifier = open("randomForest.pickle","wb")
-        pickle.dump(clf_RF, save_classifier)
-        save_classifier.close()
-        print("Saved Random Forest classifier as randomForest.pickle")
+        # save_classifier = open("clf.pickle","wb")
+        # pickle.dump(clf_RF, save_classifier)
+        # save_classifier.close()
+        # print("Saved Random Forest classifier as randomForest.pickle")
 
 ## Runing on server 
 if platform.system() == 'Linux':
     list_comp = [200, 300, 500, 800, 1000, 1500, 2000, 3000]
+    transformers = ['Count', 'Tfid']
     for n_components in list_comp:
-        df = ethPredictor2("1910p_1percent.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2")
-        df.trainAndTest()
+        for transformer in transformers:
+            df = ethPredictor2("1910p_10percent.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2",transformer)
+            df.trainAndTest()
 else:
-    list_comp = [200, 300, 500, 800, 1000, 1500, 2000, 3000]
+    list_comp = [200, 300, 500, 800, 1000, 1500]
+    transformers = ['Count', 'Tfid']
     for n_components in list_comp:
-        df = ethPredictor2("5percentdata.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2")
-        df.trainAndTest()
+        for transformer in transformers:
+            df = ethPredictor2("5percentdata.csv", "LName","Japanese", n_components, "balanced_subsample", "hinge", "l2", transformer)
+            df.trainAndTest()
+

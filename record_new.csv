@@ -1,0 +1,13 @@
+Model,n_components,Transformer,Loss function,Class Weight,Penalty,Sensitivity,Specificity,T1P1,T1P0,T0P0,T0P1
+RF,200,Count,hinge,balanced_subsample,l2,0.640625,0.996662958843,41.0,23.0,896.0,3.0
+SVM,200,Count,hinge,balanced_subsample,l2,0.625,0.989988876529,40.0,24.0,890.0,9.0
+RF,200,Tfid,hinge,balanced_subsample,l2,0.65625,0.996662958843,42.0,22.0,896.0,3.0
+SVM,200,Tfid,hinge,balanced_subsample,l2,0.671875,0.989988876529,43.0,21.0,890.0,9.0
+RF,300,Count,hinge,balanced_subsample,l2,0.625,0.996662958843,40.0,24.0,896.0,3.0
+SVM,300,Count,hinge,balanced_subsample,l2,0.65625,0.992213570634,42.0,22.0,892.0,7.0
+RF,300,Tfid,hinge,balanced_subsample,l2,0.65625,0.995550611791,42.0,22.0,895.0,4.0
+SVM,300,Tfid,hinge,balanced_subsample,l2,0.625,0.991101223582,40.0,24.0,891.0,8.0
+RF,500,Count,hinge,balanced_subsample,l2,0.59375,0.997775305895,38.0,26.0,897.0,2.0
+SVM,500,Count,hinge,balanced_subsample,l2,0.796875,0.988876529477,51.0,13.0,889.0,10.0
+RF,500,Tfid,hinge,balanced_subsample,l2,0.59375,0.996662958843,38.0,26.0,896.0,3.0
+SVM,500,Tfid,hinge,balanced_subsample,l2,0.640625,0.992213570634,41.0,23.0,892.0,7.0
